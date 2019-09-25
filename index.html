@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-121907600-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-121907600-1');
+</script>
+
+<head>
+  <meta charset=utf-8 />
+  <title>Horticulture Resource Directory</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <link href='https://api.mapbox.com/mapbox-assembly/v0.21.2/assembly.min.css' rel='stylesheet'>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <style>
+  #map {
+    background: #448ee4;
+    width: 100%;
+  }
+  #title {
+    position: absolute;
+    bottom: 20px;
+    left: 15px;
+    width: 35;
+    padding: 6px 12px;
+    background: rgba(256, 256, 256, .80);
+    border: 1px solid #005d7e;
+    border-radius: 3px;
+    z-index: 800;
+    font-size: 1.6em;
+  }
+
+  /* modal test */
+
+  #myModal {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  color: #444;
+  cursor: help;
+  text-align: left;
+  outline: none;
+  border-radius: 5px;
+  font-size: 15px;
+  z-index: 800;
+  }
+
+  #myBtn {
+  position: absolute;
+  top: 80px;
+  left: 12px;
+  width: 40px;
+  height: 40px;
+  background-size: 40px 40px;
+  color: #444;
+  cursor: help;
+  text-align: left;
+  outline: none;
+  border-radius: 5px;
+  font-size: 15px;
+  z-index: 850;
+  }
+
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: #005d7e; /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+
+  /* Modal Content */
+  .modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    font-size: 12px;
+    line-height: 15px;
+    border: 1px solid #005d7e;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 640px;
+  }
+
+  /* The Close Button */
+  .close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* Style the collapsible content. Note: hidden by default */
+  .content {
+    position: absolute;
+    display: none;
+    overflow: hidden;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    padding: 15px 15px;
+    background: rgba(256, 256, 256, .85);
+    border: 1px solid #005d7e;
+    border-radius: 5px;
+    font-size: 12px;
+    line-height: 15px;
+    z-index: 800;
+  }
+  .leaflet-popup-tip,
+  .leaflet-popup-content-wrapper {
+    z-index: 900;
+  }
+
+  .leaflet-touch .leaflet-control-layers-toggle {
+  background-image:url(images/layers.png);
+  width: 127px;
+  height: 44px;
+  background-size: 127px 44px;
+  }
+
+  .leaflet-retina .leaflet-control-layers-toggle {
+  background-image:url(images/layers.png);
+  width: 127px;
+  height: 44px;
+  background-size: 127px 44px;
+  }
+
+
+  h1 {
+    color: #005d7e;
+    font-weight: bold;
+    font-size: 125%;
+  }
+  h2 {
+      color: #005d7e;
+      font-weight: bold;
+      font-size: 115%;
+  }
+  h3 {
+      color: #005d7e;
+      font-weight: bold;
+      font-size: 105%;
+  }
+  a {
+      color: #005d7e;
+      font-weight: bold;
+  }
+  a:hover {
+      color: #000000;
+  }
+
+
+
+  </style>
+</head>
+
+<body>
+
+  <section id="title">
+    <b>Service Provider Directory of Kentucky</b>
+  </section>
+
+  <div id="map" class='viewport-full viewport-full-ml'></div>
+
+  <!-- Trigger/Open The Modal -->
+  <button id="myBtn"><img src="info.png" height="40" width="40"></button>
+
+  <!-- Main Info Modal -->
+  <div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p><h2>About This Map</h2><br>
+        This interactive map shows the locations of resources related to Horticultural Activity
+        across the Commonwealth of Kentucky.</p><br>
+        <h2>Using This Map</h2><br>
+        <p><b>Clicking/tapping</b> an icon on the map shows shows detail.</p><br>
+        <p>The +/- buttons at the top left <b>zoom in and out</b>, as does the mouse wheel, and standard mobile gestures.</p><br>
+        <p>Map <b>resources can be turned on and off</b> by type in the <b>legend at the top right</b>, which will appear after bringing the mouse to or tapping on the <b>Map Layer Icon</b> -> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="images/layers.png"> </p><br>
+        <!-- <p>The <b>search box</b> allows users to enter a physical address, city name, or zipcode to <b>place a marker</b>.</p><br> -->
+        <h2>Data Sources</h2><br>
+      <p>The primary data source is the <a href="https://agpolicy.ky.gov/Pages/default.aspx" target="_blank">Governor's
+        Office of Agricultural Policy</a> and the <a href="http://www.kyagr.com/" target="blank">Kentucky Department of Agriculture</a>.<br><br>
+        <h3>&nbsp; &nbsp; &nbsp;Specific Dataset Information</h3>
+        <ul>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Educational Greenhouses</b> - provided by KY-GOAP, March 2018</li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Farmers' Markets</b> - provided by KDA, June 2018</li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Produce Auctions</b> - provided by UK CCD, July 2018 <a href="http://www.uky.edu/ccd/pricereports/kypa" target="_blank"><img src="info-tiny.png"></a></li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Shared Equipment</b> - data provided by KY-GOAP, March 2018 <a href="https://agpolicy.ky.gov/funds/Pages/program-portal.aspx" target="_blank"><img src="info-tiny.png"></a></li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Roadside Farmstands</b> - data provided by KDA, September 2018 <a href="https://www.kyfb.com/federation/roadside-farm-markets/roadside-farm-market-owners/" target="_blank"><img src="info-tiny.png"></a></li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Agritourism Venue</b> - data provided by KDA, September 2018 <a href="http://www.kyagr.com/marketing/agritourism.html" target="_blank"><img src="info-tiny.png"></a></li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Water Testing Lab</b> - data provided by UK Food Connection <a href="https://foodconnection.ca.uky.edu/" target="_blank"><img src="info-tiny.png"></a>
+            <br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;and the UK Food Systems Innovation Center, October 2018 <a href="http://www.uky.edu/fsic/" target="_blank"><img src="info-tiny.png"></a></li>
+        </ul><br>
+        </p>
+        <p><h2>Funding and Support</h2><br><center>
+          <a href="https://agpolicy.ky.gov/board/Pages/default.aspx" target="_blank"><img src="images/kadf-logo-footer.gif" hspace="20" vspace="20" border="5"></a>
+           &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+           <a href="http://kyhortcouncil.org/" target="_blank"><img src="images/khc-logo-footer.jpg" width="185" height="110" hspace="20" vspace="20" border="5"></a>
+          </center>
+        </p>
+        <p><br>
+        Funding and support for this project provided by the <a href="https://agpolicy.ky.gov/board/Pages/default.aspx" target="_blank">Kentucky Agricultural
+          Development Board</a> through the <a href="http://kyhortcouncil.org/" target="_blank">
+            Kentucky Horticulture Council</a>.</p>
+      <p><br>Map developed and maintained by <br><br><a href="mailto:joshua.knight@uky.edu">
+        Joshua Knight</a><br>
+        Senior Extension Associate, Horticulture<br>
+        <a href="http://www.uky.edu/ccd">Center for Crop Diversification</a><br>
+        University of Kentucky</p>
+    </div>
+
+  </div>
+
+  <!-- load leaflet, omnivore, and mapapp script -->
+
+  <script async defer src="https://api.mapbox.com/mapbox-assembly/v0.21.2/assembly.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+  <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <script src="https://rawgit.com/MarcChasse/leaflet.ScaleFactor/master/leaflet.scalefactor.min.js"></script>
+  <script>
+
+  // initialize map, centered on KY
+  var southWest = L.latLng(35.51, -90.29),
+      northEast = L.latLng(40.24, -80.69),
+      bounds = L.latLngBounds(southWest, northEast);
+
+  var map = L.map('map', {
+      zoomSnap: .05,
+      center: [37.839333, -85.7],
+      maxBounds: bounds,
+      zoom: 7.5,
+      minZoom: 6.5,
+      maxZoom: 18,
+    });
+
+  // mapbox API access Token
+    var accessToken = 'pk.eyJ1Ijoia29uc29sdXMiLCJhIjoiY2pnd2d2dXJrMTk4MzMzcGRmNjl6enpmYyJ9.MC43t60Y6axGbi32YET_tA'
+
+  // request a mapbox raster tile layer and add to map
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + accessToken, {
+      maxZoom: 18,
+      id: 'mapbox.light',
+      accessToken: accessToken
+    }).addTo(map);
+
+  // set display style for county polygons
+    var countyStyle = {
+        "color": "#005d7e",
+        "weight": 1,
+        "fillOpacity" : 0.05,
+        "opacity": 0.2
+    };
+
+    // set icons for layer types
+    var greenhouseIcon = L.icon({
+        iconUrl: "./icons/flower.png",
+        iconSize: [35, 35],
+        popupAnchor: [0, -15]
+    });
+
+    var equipmentIcon = L.icon({
+        iconUrl: "./icons/equipment.png",
+        iconSize: [35, 25],
+        popupAnchor: [0, -15]
+    });
+
+    var auctionIcon = L.icon({
+        iconUrl: "./icons/auction.png",
+        iconSize: [35, 35],
+        popupAnchor: [0, -15]
+    });
+
+    var marketIcon = L.icon({
+        iconUrl: "./icons/shop.png",
+        iconSize: [35, 35],
+        popupAnchor: [0, -15]
+    });
+
+    var hortsupplyIcon = L.icon({
+        iconUrl: "./icons/hortsupply.png",
+        iconSize: [35, 35],
+        popupAnchor: [0, -15]
+    });
+
+    var farmstandIcon = L.icon({
+        iconUrl: "./icons/farmstand.png",
+        iconSize: [35, 35],
+        popupAnchor: [0, -15]
+    });
+
+    var agtourismIcon = L.icon({
+        iconUrl: "./icons/agtourism.png",
+        iconSize: [35, 35],
+        popupAnchor: [0, -15]
+    });
+
+    var waterlabIcon = L.icon({
+        iconUrl: "./icons/waterlab.png",
+        iconSize: [35, 35],
+        popupAnchor: [0, -15]
+    });
+
+    // load KY county polygons
+  $.getJSON("./data/ky-counties.geojson", function(counties) {
+
+        // load CSV file
+        omnivore.csv('data/service_provider_data_geo.csv')
+        .on('ready', function(e) {
+            drawMap(e.target.toGeoJSON());
+            addDataToMap(counties, countyStyle, map);
+        })
+        .on('error', function(e) {
+            console.log(e.error);
+    });
+
+  });
+
+  function drawMap(data) {
+
+    // create layer groups by resource type
+
+    var marketLayer = L.geoJson(data, {
+      filter: marketFilter,
+      pointToLayer: function(feature,latlng) {
+          return L.marker(latlng, {icon: marketIcon});
+        },
+        onEachFeature : function(feature,layer) {
+          var props = feature.properties;
+          var locationPopup =
+            "<h2>" + props.resource_t + "</h2>" + "<b>" + props.org_name + "</b>" +
+            "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" +
+            props.phone + "<br><a href='mailto:" + props.email + "'>" + props.email + "</a><br><a href='" + props.optional_r + "'>" + props.optional_r + "</a></p></p>";
+            layer.bindPopup(locationPopup);
+        }
+      }).addTo(map);
+
+    var greenhouseLayer = L.geoJson(data, {
+      filter: greenhouseFilter,
+      pointToLayer: function(feature,latlng) {
+          return L.marker(latlng, {icon: greenhouseIcon});
+        },
+        onEachFeature : function(feature,layer) {
+          var props = feature.properties;
+          var locationPopup =
+            "<h2>" + props.resource_t + "</h2>" + "<b>" + props.org_name + "</b>" +
+            "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" +
+            props.contact_ti + "<br>" + props.phone + "<br><a href='mailto:" + props.email + "'>" + props.email + "</a></p></p>";
+            layer.bindPopup(locationPopup);
+        }
+      }).addTo(map);
+
+    var equipmentLayer = L.geoJson(data, {
+      filter: equipmentFilter,
+        pointToLayer: function(feature,latlng) {
+            return L.marker(latlng, {icon: equipmentIcon});
+          },
+          onEachFeature : function(feature,layer) {
+            var props = feature.properties;
+            var locationPopup =
+              "<h2>" + props.resource_t + "</h2>" +  props.optional_r + "<br><b>" + props.org_name + "</b>" +
+              "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" +
+              props.contact_ti + "<br>" + props.phone + "<br><a href='mailto:" + props.email + "'>" + props.email + "</a></p></p>";
+              layer.bindPopup(locationPopup)
+          }
+      }).addTo(map);
+
+      var auctionLayer = L.geoJson(data, {
+        filter: auctionFilter,
+          pointToLayer: function(feature,latlng) {
+              return L.marker(latlng, {icon: auctionIcon});
+            },
+            onEachFeature : function(feature,layer) {
+              var props = feature.properties;
+              var locationPopup =
+                "<h2>" + props.resource_t + "</h2><br><b>" + props.org_name + "</b>" +
+                "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" +
+                props.contact_ti + "<br>" + props.phone + "<br>" + props.optional_r + "<br><a href='" + props.email + "'>Auction Schedule and Price Reports</a></p></p>";
+                layer.bindPopup(locationPopup)
+            }
+        }).addTo(map);
+
+        var hortsupplyLayer = L.geoJson(data, {
+          filter: hortsupplyFilter,
+            pointToLayer: function(feature,latlng) {
+                return L.marker(latlng, {icon: hortsupplyIcon});
+              },
+              onEachFeature : function(feature,layer) {
+                var props = feature.properties;
+                var locationPopup =
+                "<h2>" + props.resource_t + "</h2><b>" + props.org_name + "</b><br>" + props.optional_r +
+                "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" + props.phone
+                 + "</a></p></p>";
+                  layer.bindPopup(locationPopup)
+              }
+          }).addTo(map);
+
+          var farmstandLayer = L.geoJson(data, {
+            filter: farmstandFilter,
+              pointToLayer: function(feature,latlng) {
+                  return L.marker(latlng, {icon: farmstandIcon});
+                },
+                onEachFeature : function(feature,layer) {
+                  var props = feature.properties;
+                  var locationPopup =
+                    "<h2>" + props.resource_t + "</h2><br><b>" + props.org_name + "</b>" +
+                    "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" + props.phone +
+                    "<br><br><a href='mailto:" + props.email + "'>" + props.email + "</a><br><a href='http://" + props.optional_r + "'>" +
+                    props.optional_r + "</a></p></p>";
+                    layer.bindPopup(locationPopup)
+                }
+            }).addTo(map);
+
+            var agtourismLayer = L.geoJson(data, {
+              filter: agtourismFilter,
+                pointToLayer: function(feature,latlng) {
+                    return L.marker(latlng, {icon: agtourismIcon});
+                  },
+                  onEachFeature : function(feature,layer) {
+                    var props = feature.properties;
+                    var locationPopup =
+                      "<h2>" + props.resource_t + "</h2><br><b>" + props.org_name + "</b>" +
+                      "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" + props.phone +
+                      "<br><br><a href='mailto:" + props.email + "'>" + props.email + "</a><br><a href='http://" + props.optional_r + "'>" +
+                      props.optional_r + "</a></p></p>";
+                      layer.bindPopup(locationPopup)
+                  }
+              }).addTo(map);
+
+              var waterlabLayer = L.geoJson(data, {
+                filter: waterlabFilter,
+                  pointToLayer: function(feature,latlng) {
+                      return L.marker(latlng, {icon: waterlabIcon});
+                    },
+                    onEachFeature : function(feature,layer) {
+                      var props = feature.properties;
+                      var locationPopup =
+                        "<h2>" + props.resource_t + "</h2><br><b>" + props.org_name + "</b><br><br>" + props.address + "<br><br>Onsite Sampling Offered:  <b><font color='red'>" + props.contact_ti +
+                        "<br><b>" + props.optional_r + "</b></font><p><b>Contact Information:  <br></b></b>" + props.phone + "<br><a href='mailto:" +
+                        props.email + "'>" + props.email + "</a></p>";
+                        layer.bindPopup(locationPopup)
+                    }
+                }).addTo(map);
+
+    // create object of all layers
+    var geoJsonLayers = {
+          marketLayer: marketLayer,
+          greenhouseLayer: greenhouseLayer,
+          equipmentLayer: equipmentLayer,
+          auctionLayer: auctionLayer,
+          hortsupplyLayer: hortsupplyLayer,
+          waterlabLayer: waterlabLayer,
+          farmstandLayer: farmstandLayer,
+          agtourismLayer: agtourismLayer,
+    };
+
+    // legend for turning on/off layers
+    var sourcesLabels = {
+      "<img src='icons/flower.png' height='35' width='35'><b>&nbsp;Educational Greenhouse</b>": geoJsonLayers.greenhouseLayer,
+      "<img src='icons/shop.png' height='34' width='35'><b>&nbsp;Farmers' Market</b>": geoJsonLayers.marketLayer,
+      "<img src='icons/auction.png' height='34' width='35'><b>&nbsp;Produce Auction</b>": geoJsonLayers.auctionLayer,
+      "<img src='icons/equipment.png' height='29' width='39'><b>&nbsp;Shared Equipment</b><br><br>": geoJsonLayers.equipmentLayer,
+      "<img src='icons/hortsupply.png' height='39' width='39'><b>&nbsp;Horticultural Supply Store</b>": geoJsonLayers.hortsupplyLayer,
+      "<img src='icons/waterlab.png' height='39' width='39'><b>&nbsp;Water Testing Lab</b>": geoJsonLayers.waterlabLayer,
+      "<img src='icons/farmstand.png' height='36' width='36'><b>&nbsp;Roadside Market</b>": geoJsonLayers.farmstandLayer,
+      "<img src='icons/agtourism.png' height='36' width='36'><b>&nbsp;Agritourism Venue</b>": geoJsonLayers.agtourismLayer,
+    };
+
+    L.control.layers(null, sourcesLabels, { collapsed:true }).addTo(map);
+
+    // info modal code
+    var modal = document.getElementById('myModal');
+    // Get the button that opens the modal
+    var btn = document.getElementById("myBtn");
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+    // When the user clicks the button, open the modal
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+
+    // filtering functions for creating multiple layers from single geojson
+    function greenhouseFilter(feature) {
+      if (feature.properties.resource_t === "Educational Greenhouse") return true
+    }
+
+    function equipmentFilter(feature) {
+      if (feature.properties.resource_t === "Shared Equipment") return true
+    }
+
+    function auctionFilter(feature) {
+      if (feature.properties.resource_t === "Produce Auction") return true
+    }
+
+    function marketFilter(feature) {
+      if (feature.properties.resource_t === "Farmers' Market") return true
+    }
+
+    function hortsupplyFilter(feature) {
+      if (feature.properties.resource_t === "Horticulture Supply") return true
+    }
+
+    function farmstandFilter(feature) {
+      if (feature.properties.resource_t === "Roadside Stand") return true
+    }
+
+    function agtourismFilter(feature) {
+      if (feature.properties.resource_t === "Ag Tourism Venue") return true
+    }
+
+    function waterlabFilter(feature) {
+      if (feature.properties.resource_t === "Water Testing Lab") return true
+    }
+
+  } // end drawMap()
+
+  function addDataToMap(data, style, map) {
+      var dataLayer = L.geoJson(data, {
+        style: style,
+        onEachFeature: function (feature, layer) {
+              layer.bindTooltip("<h2>" + feature.properties.name + " County</h2>");
+        }
+      });
+      dataLayer.addTo(map);
+  }
+
+
+  </script>
+
+</body>
+</html>
