@@ -191,8 +191,7 @@
     <div class="modal-content">
       <span class="close">&times;</span>
       <p><h2>About This Map</h2><br>
-        This interactive map shows the locations of resources related to Horticultural Activity
-        across the Commonwealth of Kentucky.</p><br>
+        This interactive map shows the locations of agricultural service providers across the Commonwealth of Kentucky.</p><br>
         <h2>Using This Map</h2><br>
         <p><b>Clicking/tapping</b> an icon on the map shows shows detail.</p><br>
         <p>The +/- buttons at the top left <b>zoom in and out</b>, as does the mouse wheel, and standard mobile gestures.</p><br>
@@ -203,14 +202,12 @@
         Office of Agricultural Policy</a> and the <a href="http://www.kyagr.com/" target="blank">Kentucky Department of Agriculture</a>.<br><br>
         <h3>&nbsp; &nbsp; &nbsp;Specific Dataset Information</h3>
         <ul>
-          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Educational Greenhouses</b> - provided by KY-GOAP, March 2018</li>
-          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Cooperative Extension Offices</b> - provided by University of Kentucky, September 2019</li>
-          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Produce Auctions</b> - provided by UK CCD, July 2018 <a href="http://www.uky.edu/ccd/pricereports/kypa" target="_blank"><img src="info-tiny.png"></a></li>
-          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Shared Equipment</b> - data provided by KY-GOAP and the Kentucky Horticulture Council, March 2019 <a href="https://agpolicy.ky.gov/funds/Pages/program-portal.aspx" target="_blank"><img src="info-tiny.png"></a></li>
-          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Roadside Farmstands</b> - data provided by KDA, September 2018 <a href="https://www.kyfb.com/federation/roadside-farm-markets/roadside-farm-market-owners/" target="_blank"><img src="info-tiny.png"></a></li>
-          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Agritourism Venue</b> - data provided by KDA, September 2018 <a href="http://www.kyagr.com/marketing/agritourism.html" target="_blank"><img src="info-tiny.png"></a></li>
-          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Water Testing Lab</b> - data provided by UK Food Connection <a href="https://foodconnection.ca.uky.edu/" target="_blank"><img src="info-tiny.png"></a>
-            <br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;and the UK Food Systems Innovation Center, October 2018 <a href="http://www.uky.edu/fsic/" target="_blank"><img src="info-tiny.png"></a></li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Community and Commercial Kitchens</b> - provided by Kentucky Horticulture Council, March 2019</li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>UK Resources, Cooperative Extension Offices</b> - provided by University of Kentucky, September 2019</li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>County Conservation District Offices</b> - provided by Kentucky Energy and Environment Cabinet, September 2019 <a href="https://eec.ky.gov/" target="_blank"><img src="info-tiny.png"></a></li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Shared Equipment</b> - data provided by KY-GOAP and the Kentucky Horticulture Council, August 2019 <a href="https://agpolicy.ky.gov/funds/Pages/program-portal.aspx" target="_blank"><img src="info-tiny.png"></a></li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>USDA-NRCS Offices</b> - data provided by USDA-NRCS, July 2019 <a href="https://www.nrcs.usda.gov/" target="_blank"><img src="info-tiny.png"></a></li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Business Development Resource</b> - data provided by Kentucky Center for Agriculture and Rural Development <a href="https://kcard.info/" target="_blank"><img src="info-tiny.png"></a>
         </ul><br>
         </p>
         <p><h2>Funding and Support</h2><br><center>
@@ -287,8 +284,8 @@
         popupAnchor: [0, -15]
     });
 
-    var auctionIcon = L.icon({
-        iconUrl: "./icons/auction.png",
+    var NRCSIcon = L.icon({
+        iconUrl: "./icons/NRCS.png",
         iconSize: [35, 35],
         popupAnchor: [0, -15]
     });
@@ -299,26 +296,26 @@
         popupAnchor: [0, -15]
     });
 
-    var hortsupplyIcon = L.icon({
-        iconUrl: "./icons/hortsupply.png",
+    var kitchenIcon = L.icon({
+        iconUrl: "./icons/kitchen.png",
         iconSize: [35, 35],
         popupAnchor: [0, -15]
     });
 
-    var farmstandIcon = L.icon({
-        iconUrl: "./icons/farmstand.png",
+    var KSUIcon = L.icon({
+        iconUrl: "./icons/KSU.png",
         iconSize: [35, 35],
         popupAnchor: [0, -15]
     });
 
-    var agtourismIcon = L.icon({
-        iconUrl: "./icons/agtourism.png",
+    var UKIcon = L.icon({
+        iconUrl: "./icons/UK.png",
         iconSize: [35, 35],
         popupAnchor: [0, -15]
     });
 
-    var waterlabIcon = L.icon({
-        iconUrl: "./icons/waterlab.png",
+    var BusDevIcon = L.icon({
+        iconUrl: "./icons/BusDev.png",
         iconSize: [35, 35],
         popupAnchor: [0, -15]
     });
@@ -387,79 +384,75 @@
           }
       }).addTo(map);
 
-      var auctionLayer = L.geoJson(data, {
-        filter: auctionFilter,
+      var NRCSLayer = L.geoJson(data, {
+        filter: NRCSFilter,
           pointToLayer: function(feature,latlng) {
-              return L.marker(latlng, {icon: auctionIcon});
+              return L.marker(latlng, {icon: NRCSIcon});
             },
             onEachFeature : function(feature,layer) {
               var props = feature.properties;
               var locationPopup =
-                "<h2>" + props.resource_t + "</h2><br><b>" + props.org_name + "</b>" +
-                "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" +
-                props.contact_ti + "<br>" + props.phone + "<br>" + props.optional_r + "<br><a href='" + props.email + "'>Auction Schedule and Price Reports</a></p></p>";
+                "<h2>USDA<br>Natural Resource Conservation Service</h2><b><br>" + props.org_name + "</b>" +
+                "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.phone + "</p></p>";
                 layer.bindPopup(locationPopup)
             }
         }).addTo(map);
 
-        var hortsupplyLayer = L.geoJson(data, {
-          filter: hortsupplyFilter,
+        var kitchenLayer = L.geoJson(data, {
+          filter: kitchenFilter,
             pointToLayer: function(feature,latlng) {
-                return L.marker(latlng, {icon: hortsupplyIcon});
+                return L.marker(latlng, {icon: kitchenIcon});
               },
               onEachFeature : function(feature,layer) {
                 var props = feature.properties;
                 var locationPopup =
-                "<h2>" + props.resource_t + "</h2><b>" + props.org_name + "</b><br>" + props.optional_r +
-                "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" + props.phone
-                 + "</a></p></p>";
+                "<h2>" + props.resource_type + "</h2><b>" + props.org_name + "</b><br><p>" + props.address +
+                "<br><br><b>Contact Information:  <br></b>" + props.contact_1 + "<br>" + props.phone + "<br><a href='mailto:" + props.email + "'>" + props.email
+                + "</a><br><a href='" + props.optional_1 + "'>" + props.optional_1 + "</a></p></p>";
                   layer.bindPopup(locationPopup)
               }
           }).addTo(map);
 
-          var farmstandLayer = L.geoJson(data, {
-            filter: farmstandFilter,
+          var KSULayer = L.geoJson(data, {
+            filter: KSUFilter,
               pointToLayer: function(feature,latlng) {
-                  return L.marker(latlng, {icon: farmstandIcon});
+                  return L.marker(latlng, {icon: KSUIcon});
                 },
                 onEachFeature : function(feature,layer) {
                   var props = feature.properties;
                   var locationPopup =
-                    "<h2>" + props.resource_t + "</h2><br><b>" + props.org_name + "</b>" +
-                    "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" + props.phone +
-                    "<br><br><a href='mailto:" + props.email + "'>" + props.email + "</a><br><a href='http://" + props.optional_r + "'>" +
-                    props.optional_r + "</a></p></p>";
+                    "<h2>" + props.resource_type + "</h2><br><b>" + props.org_name + "</b>" +
+                    "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.phone +
+                    "<br><a href='http://" + props.optional_1 + "'>" +
+                    props.optional_1 + "</a></p></p>";
                     layer.bindPopup(locationPopup)
                 }
             }).addTo(map);
 
-            var agtourismLayer = L.geoJson(data, {
-              filter: agtourismFilter,
+            var UKLayer = L.geoJson(data, {
+              filter: UKFilter,
                 pointToLayer: function(feature,latlng) {
-                    return L.marker(latlng, {icon: agtourismIcon});
+                    return L.marker(latlng, {icon: UKIcon});
                   },
                   onEachFeature : function(feature,layer) {
                     var props = feature.properties;
                     var locationPopup =
-                      "<h2>" + props.resource_t + "</h2><br><b>" + props.org_name + "</b>" +
-                      "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" + props.phone +
-                      "<br><br><a href='mailto:" + props.email + "'>" + props.email + "</a><br><a href='http://" + props.optional_r + "'>" +
-                      props.optional_r + "</a></p></p>";
+                      "<h2>" + props.resource_type + "</h2><br><b>" + props.org_name + "</b>" +
+                      "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.phone + "<br><br><a href='http://" + props.optional_1 + "'>" + props.optional_1 + "</a><br><a href='mailto:" + props.email + "'>" + props.email + "</a></p></p>";
                       layer.bindPopup(locationPopup)
                   }
               }).addTo(map);
 
-              var waterlabLayer = L.geoJson(data, {
-                filter: waterlabFilter,
+              var BusDevLayer = L.geoJson(data, {
+                filter: BusDevFilter,
                   pointToLayer: function(feature,latlng) {
-                      return L.marker(latlng, {icon: waterlabIcon});
+                      return L.marker(latlng, {icon: BusDevIcon});
                     },
                     onEachFeature : function(feature,layer) {
                       var props = feature.properties;
                       var locationPopup =
-                        "<h2>" + props.resource_t + "</h2><br><b>" + props.org_name + "</b><br><br>" + props.address + "<br><br>Onsite Sampling Offered:  <b><font color='red'>" + props.contact_ti +
-                        "<br><b>" + props.optional_r + "</b></font><p><b>Contact Information:  <br></b></b>" + props.phone + "<br><a href='mailto:" +
-                        props.email + "'>" + props.email + "</a></p>";
+                        "<h2>" + props.resource_type + "</h2><br><b>" + props.org_name + "</b><br><br>" + props.address + "<br><br><b>Contact Information:  <br></b></b>" + props.phone
+                        + "<br><a href='mailto:" + props.email + "'>" + props.email + "</a><br><a href='" + props.optional_1 + "'>" + props.optional_1 + "</a></p>";
                         layer.bindPopup(locationPopup)
                     }
                 }).addTo(map);
@@ -469,23 +462,23 @@
           CESLayer: CESLayer,
           conservationLayer: conservationLayer,
           equipmentLayer: equipmentLayer,
-          auctionLayer: auctionLayer,
-          hortsupplyLayer: hortsupplyLayer,
-          waterlabLayer: waterlabLayer,
-          farmstandLayer: farmstandLayer,
-          agtourismLayer: agtourismLayer,
+          NRCSLayer: NRCSLayer,
+          kitchenLayer: kitchenLayer,
+          BusDevLayer: BusDevLayer,
+          KSULayer: KSULayer,
+          UKLayer: UKLayer,
     };
 
     // legend for turning on/off layers
     var sourcesLabels = {
       "<img src='icons/conservation.png' height='35' width='35'><b>&nbsp;Conservation District Office</b>": geoJsonLayers.conservationLayer,
       "<img src='icons/CESicon.png' height='34' width='35'><b>&nbsp;Cooperative Extension Office</b>": geoJsonLayers.CESLayer,
-      "<img src='icons/auction.png' height='34' width='35'><b>&nbsp;Produce Auction</b>": geoJsonLayers.auctionLayer,
+      "<img src='icons/NRCS.png' height='34' width='35'><b>&nbsp;USDA-NRCS Office</b>": geoJsonLayers.NRCSLayer,
       "<img src='icons/equipment.png' height='29' width='39'><b>&nbsp;Shared Equipment</b><br><br>": geoJsonLayers.equipmentLayer,
-      "<img src='icons/hortsupply.png' height='39' width='39'><b>&nbsp;Horticultural Supply Store</b>": geoJsonLayers.hortsupplyLayer,
-      "<img src='icons/waterlab.png' height='39' width='39'><b>&nbsp;Water Testing Lab</b>": geoJsonLayers.waterlabLayer,
-      "<img src='icons/farmstand.png' height='36' width='36'><b>&nbsp;Roadside Market</b>": geoJsonLayers.farmstandLayer,
-      "<img src='icons/agtourism.png' height='36' width='36'><b>&nbsp;Agritourism Venue</b>": geoJsonLayers.agtourismLayer,
+      "<img src='icons/kitchen.png' height='39' width='39'><b>&nbsp;Community / Commercial Kitchen</b>": geoJsonLayers.kitchenLayer,
+      "<img src='icons/BusDev.png' height='39' width='39'><b>&nbsp;Business Development Resource</b>": geoJsonLayers.BusDevLayer,
+      "<img src='icons/KSU.png' height='36' width='36'><b>&nbsp;Kentucky State University Resource</b>": geoJsonLayers.KSULayer,
+      "<img src='icons/UK.png' height='36' width='36'><b>&nbsp;University of Kentucky Resource</b>": geoJsonLayers.UKLayer,
     };
 
     L.control.layers(null, sourcesLabels, { collapsed:true }).addTo(map);
@@ -521,28 +514,28 @@
       if (feature.properties.resource_type === "Shared Equipment") return true
     }
 
-    function auctionFilter(feature) {
-      if (feature.properties.resource_t === "Produce Auction") return true
+    function NRCSFilter(feature) {
+      if (feature.properties.resource_type === "NRCS Office") return true
     }
 
     function CESFilter(feature) {
       if (feature.properties.resource_type === "Cooperative Extension Office") return true
     }
 
-    function hortsupplyFilter(feature) {
-      if (feature.properties.resource_t === "Horticulture Supply") return true
+    function kitchenFilter(feature) {
+      if (feature.properties.resource_type === "Community / Commercial Kitchen") return true
     }
 
-    function farmstandFilter(feature) {
-      if (feature.properties.resource_t === "Roadside Stand") return true
+    function KSUFilter(feature) {
+      if (feature.properties.resource_type === "Kentucky State University Resource") return true
     }
 
-    function agtourismFilter(feature) {
-      if (feature.properties.resource_t === "Ag Tourism Venue") return true
+    function UKFilter(feature) {
+      if (feature.properties.resource_type === "University of Kentucky Resource") return true
     }
 
-    function waterlabFilter(feature) {
-      if (feature.properties.resource_t === "Water Testing Lab") return true
+    function BusDevFilter(feature) {
+      if (feature.properties.resource_type === "Business Development Resource") return true
     }
 
   } // end drawMap()
