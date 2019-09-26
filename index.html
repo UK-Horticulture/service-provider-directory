@@ -204,9 +204,9 @@
         <h3>&nbsp; &nbsp; &nbsp;Specific Dataset Information</h3>
         <ul>
           <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Educational Greenhouses</b> - provided by KY-GOAP, March 2018</li>
-          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Farmers' Markets</b> - provided by KDA, June 2018</li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Cooperative Extension Offices</b> - provided by University of Kentucky, September 2019</li>
           <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Produce Auctions</b> - provided by UK CCD, July 2018 <a href="http://www.uky.edu/ccd/pricereports/kypa" target="_blank"><img src="info-tiny.png"></a></li>
-          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Shared Equipment</b> - data provided by KY-GOAP, March 2018 <a href="https://agpolicy.ky.gov/funds/Pages/program-portal.aspx" target="_blank"><img src="info-tiny.png"></a></li>
+          <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Shared Equipment</b> - data provided by KY-GOAP and the Kentucky Horticulture Council, March 2019 <a href="https://agpolicy.ky.gov/funds/Pages/program-portal.aspx" target="_blank"><img src="info-tiny.png"></a></li>
           <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Roadside Farmstands</b> - data provided by KDA, September 2018 <a href="https://www.kyfb.com/federation/roadside-farm-markets/roadside-farm-market-owners/" target="_blank"><img src="info-tiny.png"></a></li>
           <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Agritourism Venue</b> - data provided by KDA, September 2018 <a href="http://www.kyagr.com/marketing/agritourism.html" target="_blank"><img src="info-tiny.png"></a></li>
           <li><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<b>Water Testing Lab</b> - data provided by UK Food Connection <a href="https://foodconnection.ca.uky.edu/" target="_blank"><img src="info-tiny.png"></a>
@@ -268,15 +268,15 @@
 
   // set display style for county polygons
     var countyStyle = {
-        "color": "#005d7e",
-        "weight": 1,
-        "fillOpacity" : 0.05,
+        "color": "#057e5c",
+        "weight": .75,
+        "fillOpacity" : 0.01,
         "opacity": 0.2
     };
 
     // set icons for layer types
-    var greenhouseIcon = L.icon({
-        iconUrl: "./icons/flower.png",
+    var CESIcon = L.icon({
+        iconUrl: "./icons/CESicon.png",
         iconSize: [35, 35],
         popupAnchor: [0, -15]
     });
@@ -293,8 +293,8 @@
         popupAnchor: [0, -15]
     });
 
-    var marketIcon = L.icon({
-        iconUrl: "./icons/shop.png",
+    var conservationIcon = L.icon({
+        iconUrl: "./icons/conservation.png",
         iconSize: [35, 35],
         popupAnchor: [0, -15]
     });
@@ -329,6 +329,7 @@
         // load CSV file
         omnivore.csv('data/service_provider_data_geo.csv')
         .on('ready', function(e) {
+            console.log(e.target);
             drawMap(e.target.toGeoJSON());
             addDataToMap(counties, countyStyle, map);
         })
@@ -342,32 +343,31 @@
 
     // create layer groups by resource type
 
-    var marketLayer = L.geoJson(data, {
-      filter: marketFilter,
+    var CESLayer = L.geoJson(data, {
+      filter: CESFilter,
       pointToLayer: function(feature,latlng) {
-          return L.marker(latlng, {icon: marketIcon});
+          return L.marker(latlng, {icon: CESIcon});
         },
         onEachFeature : function(feature,layer) {
           var props = feature.properties;
           var locationPopup =
-            "<h2>" + props.resource_t + "</h2>" + "<b>" + props.org_name + "</b>" +
-            "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" +
-            props.phone + "<br><a href='mailto:" + props.email + "'>" + props.email + "</a><br><a href='" + props.optional_r + "'>" + props.optional_r + "</a></p></p>";
+            "<h2>" + props.resource_type + "<br>District " + props.contact_2 + "</h2>" + "<b>" + props.org_name + "</b>" +
+            "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.phone + " (Phone)<br>" + props.email + " (Fax)</p></p>";
             layer.bindPopup(locationPopup);
-        }
+          }
       }).addTo(map);
 
-    var greenhouseLayer = L.geoJson(data, {
-      filter: greenhouseFilter,
+    var conservationLayer = L.geoJson(data, {
+      filter: conservationFilter,
       pointToLayer: function(feature,latlng) {
-          return L.marker(latlng, {icon: greenhouseIcon});
+          return L.marker(latlng, {icon: conservationIcon});
         },
         onEachFeature : function(feature,layer) {
           var props = feature.properties;
           var locationPopup =
-            "<h2>" + props.resource_t + "</h2>" + "<b>" + props.org_name + "</b>" +
-            "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" +
-            props.contact_ti + "<br>" + props.phone + "<br><a href='mailto:" + props.email + "'>" + props.email + "</a></p></p>";
+            "<h2>County Conservation Office<br>District " + props.contact_2 + "</h2>" + "<b>" + props.org_name + "</b>" +
+            "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.phone + " (Phone)<br>" +
+            props.email + " (Fax)<br><a href='" + props.contact_1 + "'>Office Information Details</a><br><a href='" + props.optional_1 + "'>" + props.optional_1 + "</a></p></p>";
             layer.bindPopup(locationPopup);
         }
       }).addTo(map);
@@ -380,9 +380,9 @@
           onEachFeature : function(feature,layer) {
             var props = feature.properties;
             var locationPopup =
-              "<h2>" + props.resource_t + "</h2>" +  props.optional_r + "<br><b>" + props.org_name + "</b>" +
-              "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_na + "<br>" +
-              props.contact_ti + "<br>" + props.phone + "<br><a href='mailto:" + props.email + "'>" + props.email + "</a></p></p>";
+              "<h2>" + props.resource_type + "</h2>" +  props.optional_1 + "<br><b>" + props.org_name + "</b>" +
+              "<p>" + props.address + "<br><br><b>Contact Information:  <br></b>" + props.contact_1 + "<br>" +
+              props.contact_2 + "<br>" + props.phone + "<br><a href='mailto:" + props.email + "'>" + props.email + "</a></p></p>";
               layer.bindPopup(locationPopup)
           }
       }).addTo(map);
@@ -466,8 +466,8 @@
 
     // create object of all layers
     var geoJsonLayers = {
-          marketLayer: marketLayer,
-          greenhouseLayer: greenhouseLayer,
+          CESLayer: CESLayer,
+          conservationLayer: conservationLayer,
           equipmentLayer: equipmentLayer,
           auctionLayer: auctionLayer,
           hortsupplyLayer: hortsupplyLayer,
@@ -478,8 +478,8 @@
 
     // legend for turning on/off layers
     var sourcesLabels = {
-      "<img src='icons/flower.png' height='35' width='35'><b>&nbsp;Educational Greenhouse</b>": geoJsonLayers.greenhouseLayer,
-      "<img src='icons/shop.png' height='34' width='35'><b>&nbsp;Farmers' Market</b>": geoJsonLayers.marketLayer,
+      "<img src='icons/conservation.png' height='35' width='35'><b>&nbsp;Conservation District Office</b>": geoJsonLayers.conservationLayer,
+      "<img src='icons/CESicon.png' height='34' width='35'><b>&nbsp;Cooperative Extension Office</b>": geoJsonLayers.CESLayer,
       "<img src='icons/auction.png' height='34' width='35'><b>&nbsp;Produce Auction</b>": geoJsonLayers.auctionLayer,
       "<img src='icons/equipment.png' height='29' width='39'><b>&nbsp;Shared Equipment</b><br><br>": geoJsonLayers.equipmentLayer,
       "<img src='icons/hortsupply.png' height='39' width='39'><b>&nbsp;Horticultural Supply Store</b>": geoJsonLayers.hortsupplyLayer,
@@ -513,20 +513,20 @@
 
 
     // filtering functions for creating multiple layers from single geojson
-    function greenhouseFilter(feature) {
-      if (feature.properties.resource_t === "Educational Greenhouse") return true
+    function conservationFilter(feature) {
+      if (feature.properties.resource_type === "County Conservation District Office") return true
     }
 
     function equipmentFilter(feature) {
-      if (feature.properties.resource_t === "Shared Equipment") return true
+      if (feature.properties.resource_type === "Shared Equipment") return true
     }
 
     function auctionFilter(feature) {
       if (feature.properties.resource_t === "Produce Auction") return true
     }
 
-    function marketFilter(feature) {
-      if (feature.properties.resource_t === "Farmers' Market") return true
+    function CESFilter(feature) {
+      if (feature.properties.resource_type === "Cooperative Extension Office") return true
     }
 
     function hortsupplyFilter(feature) {
