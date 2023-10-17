@@ -237,6 +237,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
   <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js"></script>
+  <script src="js/leaflet-providers.js"></script>
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="https://rawgit.com/MarcChasse/leaflet.ScaleFactor/master/leaflet.scalefactor.min.js"></script>
   <script>
@@ -256,16 +257,12 @@
     });
 
   // request a mapbox raster tile layer and add to map
-  // L.tileLayer('https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.{ext}', {
-  // 	minZoom: 0,
-  // 	maxZoom: 18,
-	//     ext: 'png'
-  //   }).addTo(map);
+     L.tileLayer.provider('USGS.USTopo').addTo(map);
 
   // set display style for county polygons
     var countyStyle = {
-        "color": "#057e5c",
-        "weight": 1,
+        "color": "#32594e",
+        "weight": 2,
         "fillOpacity" : 0.1,
         "opacity": 0.5
     };
